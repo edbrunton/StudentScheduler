@@ -39,7 +39,7 @@ namespace StudentScheduler
                 return false;
             }
             Section conflict = AssignedSections.FirstOrDefault(sec => sec.SectionTime == s.SectionTime);
-            if(conflict == null)
+            if (conflict == null)
             {
                 return true;
             }
@@ -84,7 +84,7 @@ namespace StudentScheduler
         public void ChangeSection(Section section)
         {
             Section otherSection = AssignedSections.FirstOrDefault(a => a.SectionName == section.SectionName);
-            if(otherSection == null)
+            if (otherSection == null)
             {
                 throw new Exception("Cannot change to a section if not being removed from another");
             }

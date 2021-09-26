@@ -13,24 +13,35 @@ namespace StudentScheduler
             SessionDetails session = UserInteraction.RuntimeSession;
             int numSectionTimes = 6;
             int maxStudents = 7;
-            int otheringsPerSection = 2;
+            int offeringsPerSection = 2;
+            session.WriteLine(@"Howdy, user. Source code is here https://github.com/edbrunton/StudentScheduler");
             if (int.TryParse(session.ReadLine(string.Format("The default number of section times is {0}. Enter an override or anything else to continue", numSectionTimes), true), out int newNum) && newNum > 0)
             {
                 numSectionTimes = newNum;
+            }
+            if (int.TryParse(session.ReadLine(string.Format("The default number of segments per section is {0}. Enter an override or anything else to continue", offeringsPerSection), true), out newNum) && newNum > 0)
+            {
+                offeringsPerSection = newNum;
             }
             if (int.TryParse(session.ReadLine(string.Format("The default number of student per section segment is {0}. Enter an override or anything else to continue", maxStudents), true), out newNum) && newNum > 0)
             {
                 maxStudents = newNum;
             }
-            if (int.TryParse(session.ReadLine(string.Format("The default number of segments per section is {0}. Enter an override or anything else to continue", otheringsPerSection), true), out newNum) && newNum > 0)
+            List<string> classNames = new List<string>()
             {
-                otheringsPerSection = newNum;
-            }
-            List<Class> classes = new List<Class>()
-            {
-                 new Class(numSectionTimes, "Foundary", maxStudents, otheringsPerSection),
-                 new Class(numSectionTimes, "Machining", maxStudents,otheringsPerSection)
+                "Foundary",
+                "Machining"
             };
+            if (session.ReadLine(string.Format("The default number classes are {0}. Enter an override or anything else to continue", string.Join(",", classNames)), true) is string overrideClasses && !string.IsNullOrWhiteSpace(overrideClasses))
+            {
+                if (overrideClasses.Contains(',') || session.GetYesNo(string.Format("You want to reduce down to only a single class called {0}, correct?", overrideClasses)) == UserInteraction.YesNo.Yes)
+                {
+                    classNames.Clear();
+                    classNames.AddRange(overrideClasses.Split(','));
+                }
+            }
+            List<Class> classes = new List<Class>(classNames.Count);
+            classes.AddRange(classNames.Select(cn => new Class(numSectionTimes, cn, maxStudents, offeringsPerSection)));
             StudentBody studentBody = new StudentBody(numSectionTimes, classes.Count);
             IEnumerable<Section> sectionsNeedingAssignment = classes.SelectMany(c => c.Sections);
             LeastPopularDecider leastPopularDecider = new LeastPopularDecider(sectionsNeedingAssignment, studentBody);
@@ -54,7 +65,7 @@ namespace StudentScheduler
             session.WriteLine("Total unhappy: " + i);
             string fileLoc = UserInteraction.RootFilePath + "assignments.txt";
             File.WriteAllText(fileLoc, forFile);
-            session.WriteLine(string.Format("File written to {0}", fileLoc));
+            session.ReadLine(string.Format("File written to {0}", fileLoc), true);
             session.WriteExitLog(UserInteraction.Exit.Expected);
         }
 

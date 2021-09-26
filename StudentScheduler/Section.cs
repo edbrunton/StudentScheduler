@@ -17,12 +17,10 @@ namespace StudentScheduler
         }
         public bool IsFull() => Students.Count >= MaxStudents;
 
-
         public string SectionName { get; }
         public int MaxStudents { get; }
         public int SectionTime { get; }
         private int OfferingsPerSection { get; }
-        private int MaxStudentsPerOffering { get; }
         internal bool NeedsStudents()
         {
             return !IsFull();
@@ -55,7 +53,7 @@ namespace StudentScheduler
             for (char i = (char)0; i < OfferingsPerSection; i++)
             {
                 char offeringLetter = (char)(i + 'A');
-                list.Add(string.Format("{0} {1}{2}", SectionName, SectionTime,offeringLetter));
+                list.Add(string.Format("{0} {1}{2}", SectionName, SectionTime, offeringLetter));
                 list.AddRange(Students.Skip(takenSoFar).Take(target).Select(s => string.Format(" {0}", s.ClassName(this))));
                 takenSoFar += target;
             }
