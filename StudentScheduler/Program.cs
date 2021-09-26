@@ -45,14 +45,17 @@ namespace StudentScheduler
             }
             string forFile = string.Join("\n", studentBody.Students.Select(s => s.Details()).
                 Concat(sectionsNeedingAssignment.Select(sec => sec.GetPrintable())));
-            File.WriteAllText(UserInteraction.RootFilePath + "assignments.txt", forFile);
             int i = 0;
             foreach (Student student in studentBody.Students.Where(s => s.IsUnhappy()))
             {
                 session.WriteLine(student.Name + " is unhappy");
                 i++;
             }
-            session.ReadLine("Total unhappy: " + i, true);
+            session.WriteLine("Total unhappy: " + i);
+            string fileLoc = UserInteraction.RootFilePath + "assignments.txt";
+            File.WriteAllText(fileLoc, forFile);
+            session.WriteLine(string.Format("File written to {0}", fileLoc));
+            session.WriteExitLog(UserInteraction.Exit.Expected);
         }
 
     }
